@@ -1,55 +1,56 @@
 //Convolutional encoding and decoding using the Viterbi algorithm
 
 
-static portBASE_TYPE prvDecodeCommand(int8_t *pcWriteBuffer, size_t xWriteBufferLen, const int8_t *pcCommandString ) {
+
+#define DEBUG		0
+
+
+
+uint8_t viterbidecode(int iHexValue) {
 	
-	memset(pcWriteBuffer, '\0', sizeof(pcWriteBuffer));
+	//printf("Data: %u \n",iHexValue);
 
-	long lParam_len; 
-	char *cCmd_string;
-	int iHexValue;
+	uint8_t cStages0[8];
+	uint8_t cStages1[8];
+	uint8_t cStages2[8];
 
-	char cStages0[8];
-	char cStages1[8];
-	char cStages2[8];
-
-	char cTValue0[8] = {0, 0, 1, 1, 1, 1, 0, 0};
-	char cTValue1[8] = {0, 1, 0, 1, 1, 0, 1, 0};
-	char cTValue2[8] = {0, 1, 1, 0, 1, 0, 0, 1};
+	uint8_t cTValue0[8] = {0, 0, 1, 1, 1, 1, 0, 0};
+	uint8_t cTValue1[8] = {0, 1, 0, 1, 1, 0, 1, 0};
+	uint8_t cTValue2[8] = {0, 1, 1, 0, 1, 0, 0, 1};
 
 	//Each Node has it's most efficient nodal history stored here, if the most efficient path to node 0 comes from node 1, it takes on
 	//Node 1's history and adds the latest branch length to it.
-	char cNode0V[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-	char cNode1V[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-	char cNode2V[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-	char cNode3V[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+	uint8_t cNode0V[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+	uint8_t cNode1V[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+	uint8_t cNode2V[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+	uint8_t cNode3V[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 	//These are used as buffers while passing histories between nodes.
-	char cNode0T[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-	char cNode1T[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-	char cNode2T[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-	char cNode3T[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+	uint8_t cNode0T[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+	uint8_t cNode1T[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+	uint8_t cNode2T[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+	uint8_t cNode3T[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 	//Final Node length, length of correct path
-	char cNodeF;
+	uint8_t cNodeF;
 
-	char i,j;
+	uint8_t i,j;
 
 	//Stores the length of each of the 8 possible branches, they are counted 0-7 from their destination not their origin.  So the
 	//first two branches both end at node 0
-	char cBLength[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+	uint8_t cBLength[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 	//The length of the nodal histories are all stored here.
-	char cNLength[4] = {0, 0, 0, 0};
+	uint8_t cNLength[4] = {0, 0, 0, 0};
 
 	//This is a buffer for the length of the nodal histories
-	char cNLTemp[4] = {0, 0, 0, 0};
+	uint8_t cNLTemp[4] = {0, 0, 0, 0};
 
 	//Takes the input to the encode cli command
-	cCmd_string = FreeRTOS_CLIGetParameter(pcCommandString, 1, &lParam_len);
+	//scanf("%d", %iHexValue);
 
 	//Converts string to int
-	iHexValue = iArrayToHex(cCmd_string);
+	//iHexValue = iArrayToHex(iHexValue);
 
 	//
 	for(i=0;i<8;i++){
@@ -227,7 +228,6 @@ static portBASE_TYPE prvDecodeCommand(int8_t *pcWriteBuffer, size_t xWriteBuffer
 		cNLength[3] = cNLTemp[3];
 
 		//A delay to ensure other tasks get some up time
-		vTaskDelay(10);
 	}
 
 	//If node 0 has the shortest nodal length it is selected and the value is created from the node path
@@ -286,27 +286,23 @@ static portBASE_TYPE prvDecodeCommand(int8_t *pcWriteBuffer, size_t xWriteBuffer
 	//As a for loop is used it will muliply by 2 once too many times, that is fixed here.
 	cNodeF = cNodeF/2;
 
-	debug_printf("\r\nCharacter: %c\r\n", cNodeF);
-	return pdFALSE;
+	printf("Character: %x\r\n", cNodeF);
+	return cNodeF;
 }
 
 
 /*-----------------------------------------------------------*/
 /* CLI Encode Function */
 
-static portBASE_TYPE prvEncodeCommand(int8_t *pcWriteBuffer, size_t xWriteBufferLen, const int8_t *pcCommandString ) {
+int viterbiencode(char cData) {
 
-	memset(pcWriteBuffer, '\0', sizeof(pcWriteBuffer));
-	long lParam_len;
-	char *cCmd_string;
-	char cData;
+	//char cData;
 	char cBytes[8];
 	int cEncoded;
 	char cPrevious[2] = {0,0};
 	char i;
-	//Reads typed value from cli
-	cCmd_string = FreeRTOS_CLIGetParameter(pcCommandString, 1, &lParam_len);
-	cData = (int)cCmd_string[0];
+	//Reads typed value if not using entered value
+	//scanf("%c", cData);
 
 	//Seperates byte into bits
 	cBytes[0] = (cData & 0x01);	
@@ -333,6 +329,6 @@ static portBASE_TYPE prvEncodeCommand(int8_t *pcWriteBuffer, size_t xWriteBuffer
 		cEncoded += (cBytes[i] <<(3*i));
 	}
 	cEncoded += cBytes[0];
-	debug_printf("\r\n%02x\r\n", cEncoded);
-	return pdFALSE;
+	printf("\r\n%02x\r\n", cEncoded);
+	return cEncoded;
 }

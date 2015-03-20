@@ -14,6 +14,7 @@
 //Communication Protocal Includes
 #include "Serial_Functions.h"
 #include "TWI_Functions.h"
+#include "ViterbiFunctions.h"
 
 //Sensor Includes
 #include "Camera_Functions"
@@ -83,10 +84,23 @@ button_setup(BUTTON1, BUTTON2);
 //Third LED flashing to indicate setup functions are completed
 
 
+char toBeEncoded;
+int Encoded;
+int toBeDecoded;
+char Decoded;
+
 int main( void )
 {
+	printf("Please enter a single character to have it encoded.\n");
+	scanf(" %c", &toBeEncoded);
 
+	Encoded = viterbiencode(toBeEncoded);
+	printf("Encoded data: %c", Encoded);
 
-	
+	printf("Please enter a hex value to be decoded.\n");
+	scanf(" %x", &toBeDecoded);
+
+	Decoded = viterbidecode(toBeDecoded);
+	printf("Decoded data: %c", Decoded);
 }
 
