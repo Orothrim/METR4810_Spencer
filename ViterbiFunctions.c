@@ -4,55 +4,50 @@
 
 #define DEBUG		0
 
+#include "ViterbiFunctions.h"
 
-
-uint8_t viterbidecode(int iHexValue) {
+int viterbidecode(int iHexValue) {
 	
-	//printf("Data: %u \n",iHexValue);
+	char cStages0[8];
+	char cStages1[8];
+	char cStages2[8];
 
-	uint8_t cStages0[8];
-	uint8_t cStages1[8];
-	uint8_t cStages2[8];
-
-	uint8_t cTValue0[8] = {0, 0, 1, 1, 1, 1, 0, 0};
-	uint8_t cTValue1[8] = {0, 1, 0, 1, 1, 0, 1, 0};
-	uint8_t cTValue2[8] = {0, 1, 1, 0, 1, 0, 0, 1};
+	char cTValue0[8] = {0, 0, 1, 1, 1, 1, 0, 0};
+	char cTValue1[8] = {0, 1, 0, 1, 1, 0, 1, 0};
+	char cTValue2[8] = {0, 1, 1, 0, 1, 0, 0, 1};
 
 	//Each Node has it's most efficient nodal history stored here, if the most efficient path to node 0 comes from node 1, it takes on
 	//Node 1's history and adds the latest branch length to it.
-	uint8_t cNode0V[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-	uint8_t cNode1V[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-	uint8_t cNode2V[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-	uint8_t cNode3V[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+	char cNode0V[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+	char cNode1V[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+	char cNode2V[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+	char cNode3V[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 	//These are used as buffers while passing histories between nodes.
-	uint8_t cNode0T[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-	uint8_t cNode1T[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-	uint8_t cNode2T[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-	uint8_t cNode3T[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+	char cNode0T[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+	char cNode1T[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+	char cNode2T[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+	char cNode3T[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 	//Final Node length, length of correct path
-	uint8_t cNodeF;
+	int cNodeF = 0;
 
-	uint8_t i,j;
+	char i,j;
 
 	//Stores the length of each of the 8 possible branches, they are counted 0-7 from their destination not their origin.  So the
 	//first two branches both end at node 0
-	uint8_t cBLength[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+	char cBLength[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 	//The length of the nodal histories are all stored here.
-	uint8_t cNLength[4] = {0, 0, 0, 0};
+	char cNLength[4] = {0, 0, 0, 0};
 
 	//This is a buffer for the length of the nodal histories
-	uint8_t cNLTemp[4] = {0, 0, 0, 0};
+	char cNLTemp[4] = {0, 0, 0, 0};
 
-	//Takes the input to the encode cli command
-	//scanf("%d", %iHexValue);
+	if (DEBUG) {
+		printf("Input Data Was: %x\n", iHexValue);
+	}
 
-	//Converts string to int
-	//iHexValue = iArrayToHex(iHexValue);
-
-	//
 	for(i=0;i<8;i++){
 		cStages0[i] = (iHexValue & 0x01);
 		cStages1[i] = !!(iHexValue & 0x02);
@@ -68,6 +63,8 @@ uint8_t viterbidecode(int iHexValue) {
 	cBLength[2] = (cStages0[0]==cTValue0[2]) ? 0:1;
 	cBLength[2] += (cStages1[0]==cTValue1[2]) ? 0:1;
 	cBLength[2] += (cStages2[0]==cTValue2[2]) ? 0:1;
+
+    
 
 	//Stores paths so far of the nodes, these are only 000 for node 0 and 101 for node 1
 	cNode0V[0] = 0;
@@ -226,45 +223,62 @@ uint8_t viterbidecode(int iHexValue) {
 		cNLength[1] = cNLTemp[1];
 		cNLength[2] = cNLTemp[2];
 		cNLength[3] = cNLTemp[3];
-
-		//A delay to ensure other tasks get some up time
 	}
 
 	//If node 0 has the shortest nodal length it is selected and the value is created from the node path
 	if((cNLength[0]<cNLength[1]) & (cNLength[0]<cNLength[2]) & (cNLength[0]<cNLength[3])){
+		if (DEBUG) {
+			printf("Node0 Was Selected");
+		}
 		for(j=8;j>0;j--){
+			if (DEBUG) {
+				printf("Node0 Step Value: %x\n", cNodeF);
+			}
 			if((cNode0V[j-1] == 0) | (cNode0V[j-1] == 1) | (cNode0V[j-1] == 6) | (cNode0V[j-1] == 7)){
-				cNodeF *= 2;
+				cNodeF = cNodeF * 2;
 			}
 			else {
 				cNodeF += 1;
-				cNodeF *= 2;
-			}
+				cNodeF = cNodeF * 2;
+			}	
 		}
 	}
+	
 
 	//If node 1 has the shortest nodal length it is selected and the value is created from the node path
 	else if((cNLength[1]<cNLength[0]) & (cNLength[1]<cNLength[2]) & (cNLength[1]<cNLength[3])){
+		if (DEBUG) {
+			printf("Node1 Was Selected");
+		}
 		for(j=8;j>0;j--){
+			if (DEBUG) {
+				printf("Node1 Step Value: %x\n", cNodeF);
+			}
 			if((cNode1V[j-1] == 0) | (cNode1V[j-1] == 1) | (cNode1V[j-1] == 6) | (cNode1V[j-1] == 7)){
-				cNodeF *= 2;
+				cNodeF = cNodeF * 2;
 			}
 			else {
 				cNodeF += 1;
-				cNodeF *= 2;
+				cNodeF = cNodeF * 2;
 			}
 		}
 	}
 
 	//If node 2 has the shortest nodal length it is selected and the value is created from the node path
 	else if((cNLength[2]<cNLength[1]) & (cNLength[2]<cNLength[0]) & (cNLength[2]<cNLength[3])){
+		if (DEBUG) {
+			printf("Node2 Was Selected");
+		}
 		for(j=8;j>0;j--){
+			if (DEBUG) {
+				printf("Node2 Step Value: %x\n", cNodeF);
+			}
 			if((cNode2V[j-1] == 0) | (cNode2V[j-1] == 1) | (cNode2V[j-1] == 6) | (cNode2V[j-1] == 7)){
-				cNodeF *= 2;
+				cNodeF = cNodeF * 2;
 			}
 			else {
 				cNodeF += 1;
-				cNodeF *= 2;
+				cNodeF = cNodeF * 2;
 			}
 		}
 	}
@@ -272,13 +286,19 @@ uint8_t viterbidecode(int iHexValue) {
 	//If none of the other nodes were selected node 3 has the shortest nodal length it is selected and the value is 
 	//created from the node path
 	else{
+		if (DEBUG) {
+			printf("Node3 Was Selected");
+		}
 		for(j=8;j>0;j--){
+			if (DEBUG) {
+				printf("Node3 Step Value: %x\n", cNodeF);
+			}
 			if((cNode3V[j-1] == 0) | (cNode3V[j-1] == 1) | (cNode3V[j-1] == 6) | (cNode3V[j-1] == 7)){
-				cNodeF *= 2;
+				cNodeF = cNodeF * 2;
 			}
 			else {
 				cNodeF += 1;
-				cNodeF *= 2;
+				cNodeF = cNodeF * 2;
 			}
 		}
 	}
@@ -286,7 +306,7 @@ uint8_t viterbidecode(int iHexValue) {
 	//As a for loop is used it will muliply by 2 once too many times, that is fixed here.
 	cNodeF = cNodeF/2;
 
-	printf("Character: %x\r\n", cNodeF);
+	printf("Character: %c\r\n", cNodeF);
 	return cNodeF;
 }
 

@@ -6,7 +6,7 @@
 #include <string.h>
 #include "ViterbiFunctions.c"
 
-char viterbiencode(int iHexValue);
+int viterbiencode(int iHexValue);
 int viterbidecode(char cData);
 
 #endif

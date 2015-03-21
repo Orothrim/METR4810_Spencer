@@ -93,14 +93,12 @@ int main( void )
 {
 	printf("Please enter a single character to have it encoded.\n");
 	scanf(" %c", &toBeEncoded);
-
+ 
 	Encoded = viterbiencode(toBeEncoded);
-	printf("Encoded data: %c", Encoded);
-
+	
 	printf("Please enter a hex value to be decoded.\n");
 	scanf(" %x", &toBeDecoded);
 
 	Decoded = viterbidecode(toBeDecoded);
-	printf("Decoded data: %c", Decoded);
 }
 
