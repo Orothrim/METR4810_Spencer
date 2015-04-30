@@ -56,38 +56,38 @@ CMAKE_SOURCE_DIR = /home/swift/code/METR4810_Spencer/computervision/leddetection
 CMAKE_BINARY_DIR = /home/swift/code/METR4810_Spencer/computervision/leddetection
 
 #=============================================================================
-# Target rules for target CMakeFiles/leddetection.dir
+# Target rules for target CMakeFiles/ledDetection3.dir
 
 # All Build rule for target.
-CMakeFiles/leddetection.dir/all:
-	$(MAKE) -f CMakeFiles/leddetection.dir/build.make CMakeFiles/leddetection.dir/depend
-	$(MAKE) -f CMakeFiles/leddetection.dir/build.make CMakeFiles/leddetection.dir/build
+CMakeFiles/ledDetection3.dir/all:
+	$(MAKE) -f CMakeFiles/ledDetection3.dir/build.make CMakeFiles/ledDetection3.dir/depend
+	$(MAKE) -f CMakeFiles/ledDetection3.dir/build.make CMakeFiles/ledDetection3.dir/build
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/swift/code/METR4810_Spencer/computervision/leddetection/CMakeFiles  1
-	@echo "Built target leddetection"
-.PHONY : CMakeFiles/leddetection.dir/all
+	@echo "Built target ledDetection3"
+.PHONY : CMakeFiles/ledDetection3.dir/all
 
 # Include target in all.
-all: CMakeFiles/leddetection.dir/all
+all: CMakeFiles/ledDetection3.dir/all
 .PHONY : all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/leddetection.dir/rule: cmake_check_build_system
+CMakeFiles/ledDetection3.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/swift/code/METR4810_Spencer/computervision/leddetection/CMakeFiles 1
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/leddetection.dir/all
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/ledDetection3.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/swift/code/METR4810_Spencer/computervision/leddetection/CMakeFiles 0
-.PHONY : CMakeFiles/leddetection.dir/rule
+.PHONY : CMakeFiles/ledDetection3.dir/rule
 
 # Convenience name for target.
-leddetection: CMakeFiles/leddetection.dir/rule
-.PHONY : leddetection
+ledDetection3: CMakeFiles/ledDetection3.dir/rule
+.PHONY : ledDetection3
 
 # clean rule for target.
-CMakeFiles/leddetection.dir/clean:
-	$(MAKE) -f CMakeFiles/leddetection.dir/build.make CMakeFiles/leddetection.dir/clean
-.PHONY : CMakeFiles/leddetection.dir/clean
+CMakeFiles/ledDetection3.dir/clean:
+	$(MAKE) -f CMakeFiles/ledDetection3.dir/build.make CMakeFiles/ledDetection3.dir/clean
+.PHONY : CMakeFiles/ledDetection3.dir/clean
 
 # clean rule for target.
-clean: CMakeFiles/leddetection.dir/clean
+clean: CMakeFiles/ledDetection3.dir/clean
 .PHONY : clean
 
 #=============================================================================

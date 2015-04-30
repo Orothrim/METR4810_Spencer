@@ -116,7 +116,7 @@ CMAKE_OBJCOPY:FILEPATH=/usr/bin/objcopy
 CMAKE_OBJDUMP:FILEPATH=/usr/bin/objdump
 
 //Value Computed by CMake
-CMAKE_PROJECT_NAME:STATIC=leddetection
+CMAKE_PROJECT_NAME:STATIC=ledDetection3
 
 //Path to a program.
 CMAKE_RANLIB:FILEPATH=/usr/bin/ranlib
@@ -192,6 +192,18 @@ erodeDilateTut_BINARY_DIR:STATIC=/home/swift/code/METR4810_Spencer/computervisio
 
 //Value Computed by CMake
 erodeDilateTut_SOURCE_DIR:STATIC=/home/swift/code/METR4810_Spencer/computervision/leddetection
+
+//Value Computed by CMake
+ledDetection2_BINARY_DIR:STATIC=/home/swift/code/METR4810_Spencer/computervision/leddetection
+
+//Value Computed by CMake
+ledDetection2_SOURCE_DIR:STATIC=/home/swift/code/METR4810_Spencer/computervision/leddetection
+
+//Value Computed by CMake
+ledDetection3_BINARY_DIR:STATIC=/home/swift/code/METR4810_Spencer/computervision/leddetection
+
+//Value Computed by CMake
+ledDetection3_SOURCE_DIR:STATIC=/home/swift/code/METR4810_Spencer/computervision/leddetection
 
 //Value Computed by CMake
 leddetection_BINARY_DIR:STATIC=/home/swift/code/METR4810_Spencer/computervision/leddetection

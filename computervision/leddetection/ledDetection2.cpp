@@ -14,6 +14,23 @@
 #define SQUARE_SIZE 200
 #define CROPMIDPOINT 100
 
+//Marker relations
+#define BLUE_RED 400
+#define GREEN_FRONT 700
+//Red Marker Position
+#define RED_X 0
+#define RED_Y 0
+//Green Marker Position
+#define GREEN_X BLUE_RED
+#define GREEN_Y 0
+//Blue Marker Position
+#define BLUE_X BLUE_RED*0.5
+#define BLUE_Y GREEN_FRONT
+//Purple Marker Position
+#define PURPLE_X BLUE_RED*0.5
+#define PURPLE_Y GREEN_FRONT
+#define PURPLE_Z 40
+
 #define OPEN_CLOSE 1 //1 uses and opening procedure, 0 uses a closing procedure.
 #define YUV_RGB 0 //1 = YUV, 0 = RGB.
 
@@ -22,8 +39,9 @@
 #define THRESH 60
 #define AREA_THRESH 100
 
-#define ELEMENT_TYPE 2
-#define ELEMENT_SIZE 4
+#define ELEMENT_TYPE 0
+#define OPENING_SIZE 3
+#define CLOSING_SIZE 5
 
 //Used to access all of the images.
 #define ONESCOLUMN 6
@@ -39,21 +57,8 @@
 #define MANICOLOUR 127
 
 //Size of the images when displayed.
-#define WINDOWX 325
+#define WINDOWX 500
 #define WINDOWY 400
-//First of four image positions.
-#define FIRSTPOSX 0
-#define FIRSTPOSY 0
-//Second of four image positions.
-#define SECONDPOSX WINDOWX+5
-#define SECONDPOSY 0
-//Third of four image positions.
-#define THIRDPOSX 0
-#define THIRDPOSY WINDOWY+25
-//Fourth of four image positions.
-#define FOURTHPOSX WINDOWX+5
-#define FOURTHPOSY WINDOWY+25
-
 
 using namespace cv;
 using namespace std;
@@ -61,13 +66,13 @@ using namespace std;
 Point brightLoc, mousePos;
 
 char input;
-int cnt = 0, i, brightness = 0, contourIndex = 0, intense;
+int cnt = 0, i, brightness = 0, contourIndex = 0, intense, eleType;
 
 double largestArea, area;
 
-Mat element;
+Mat openElement, closeElement;
 Rect bRect;
-Scalar intenseAvg, color[3];
+Scalar intenseAvg, yuvColour, color[3], yuvAvg;
 
 vector<vector<Point> > contours;
 vector<Vec4i> hierarchy;
@@ -84,22 +89,17 @@ int write(char message[10]);
 int main(int argc, char** argv) {
 
 
-	string filename = "quadLed.png";
+	string filename = "led4.jpg";
 
 	//If no argument is given to "./Contours" then MRI1_01.png is used.
 
 	Mat originalImage = imread(filename);
 
-	if(YUV_RGB) {
-		color[0] = Scalar(255, 255, 255);
-		color[1] = Scalar(0, 0, 255);
-		color[2] = Scalar(255, 0, 0);
-	}
-	else {
-		color[0] = Scalar(255, 0, 0);
-		color[1] = Scalar(0, 255, 0);
-		color[2] = Scalar(0, 0, 255);
-	}
+	
+	yuvColour = Scalar(255, 255, 255);
+	color[0] = Scalar(255, 0, 0);
+	color[1] = Scalar(0, 255, 0);
+	color[2] = Scalar(0, 0, 255);
 
 	if(originalImage.empty()) {
 		//Checks that the file can be opened, if it can't, prints "can not open" 
@@ -109,64 +109,70 @@ int main(int argc, char** argv) {
 	}
 	if (DEBUG) {cout << "File Loaded\n\r";}
 
-	element = getStructuringElement(MORPH_ELLIPSE , Size( 2*ELEMENT_SIZE + 1, 2*ELEMENT_SIZE+1 ), Point(ELEMENT_SIZE, ELEMENT_SIZE));
+	if( ELEMENT_TYPE == 0 ){ eleType = MORPH_RECT; }
+	else if( ELEMENT_TYPE == 1 ){ eleType = MORPH_CROSS; }
+	else if( ELEMENT_TYPE == 2) { eleType = MORPH_ELLIPSE; }
+
+	openElement = getStructuringElement(eleType , Size( 2*OPENING_SIZE + 1, 2*OPENING_SIZE+1 ), Point(OPENING_SIZE, OPENING_SIZE));
+	closeElement = getStructuringElement(eleType , Size( 2*CLOSING_SIZE + 1, 2*CLOSING_SIZE+1 ), Point(CLOSING_SIZE, CLOSING_SIZE));
 
 	//Creates the image variables used for this project, one is used for each step
 	//to facilitate debugging and understanding the code.
-	Mat image = originalImage.clone(), threshImage, reducedImage, grayImage, erodedImage, colourImages[3], yuvImage, edgeImage, contoursImage, blueImage, greenImage, redImage;
+	Mat image = originalImage.clone(), threshImage, reducedImage, grayImage, erodedImage, colourImages[3], yuvImage, yuvSplit[3], edgeImage, contoursImage, blueImage, greenImage, redImage, brightImage;
 
-	if(YUV_RGB) {
-		cvtColor(image, yuvImage, CV_BGR2YCrCb);
-		split(yuvImage, colourImages);
-		intenseAvg = mean(yuvImage);
-	}
-	else{
-		split(image, colourImages);
-		intenseAvg = mean(image);
-		threshold(colourImages[0], blueImage, intenseAvg[0]*1.2, 255, THRESH_TOZERO);
-		threshold(colourImages[1], greenImage, intenseAvg[1]*1.2, 255, THRESH_TOZERO);
-		threshold(colourImages[2], redImage, intenseAvg[2]*1.2, 255, THRESH_TOZERO);
+	
+	cvtColor(image, yuvImage, CV_BGR2YCrCb);
+	split(yuvImage, yuvSplit);
+	yuvAvg = mean(yuvSplit[0]);
+	threshold(yuvSplit[0], brightImage, yuvAvg[0]*2, 255, THRESH_TOZERO);
 
-		//White lights should be reduced, as the markers are distinct colours.
-		colourImages[0] = blueImage - greenImage*0.5 - redImage*0.5; 
-		colourImages[1] = greenImage - blueImage*0.5 - redImage*0.5;
-		colourImages[2] = redImage - greenImage*0.5 - blueImage*0.5;
-	}
+	dilate(brightImage, brightImage, closeElement);
+
+	disImage((char *)"Bright Image", brightImage, 6);
+
+	split(image, colourImages);
+	intenseAvg = mean(image);
+
+	blueImage = colourImages[0].clone();
+	greenImage = colourImages[1].clone();
+	redImage = colourImages[2].clone();
+
+	disImage((char *)"Blue Image", blueImage, 1);
+	disImage((char *)"Green Image", greenImage, 2);
+	disImage((char *)"Red Image", redImage, 3);
+
+	//White lights should be reduced, as the markers are distinct colours.
+	// colourImages[0] = blueImage - greenImage*0.5 - redImage*0.5;
+	bitwise_and(colourImages[0], brightImage, colourImages[0]);
+
+	// colourImages[1] = greenImage - blueImage*0.5 - redImage*0.5;
+	bitwise_and(colourImages[1], brightImage, colourImages[1]);
+
+	// colourImages[2] = redImage - greenImage*0.5 - blueImage*0.5;
+	bitwise_and(colourImages[2], brightImage, colourImages[2]);
+
+	disImage((char *)"Blue Image 2", colourImages[0], 1);
+	disImage((char *)"Green Image 2", colourImages[1], 2);
+	disImage((char *)"Red Image 2", colourImages[2], 3);
+
 
 	if (DEBUG) {cout << "Colours Managed" << endl;}
 
 	// grayImage = imread(filename, 0);
-	for(int k = YUV_RGB; k <= 2; k++) {
-		if (DEBUG) {cout << "Loop: " << k << endl;}		
-		threshold(colourImages[k], threshImage, intenseAvg[k]*1.2, 255, THRESH_TOZERO);
+	for(int k = 0; k <= 2; k++) {
+		if (DEBUG) {cout << "Loop: " << k << endl;}
+	
+		threshold(colourImages[k], colourImages[k], intenseAvg[k]*1.2, 255, THRESH_TOZERO);
+	
+		erode(colourImages[k], erodedImage, openElement);
+		dilate(erodedImage, threshImage, openElement);
 
-		if (OPEN_CLOSE) {
-			erode(threshImage, erodedImage, element);
-			dilate(erodedImage, threshImage, element);
-		}
-		else {
-			dilate(threshImage, erodedImage, element);
-			erode(erodedImage, threshImage, element);
-		}
-
-		Canny(threshImage, edgeImage, THRESH, 2*THRESH, 3);
+		// Canny(threshImage, edgeImage, THRESH, 2*THRESH, 3);
 
 		contoursImage = threshImage.clone();
 		// contoursImage = edgeImage.clone();
 
 		blur(contoursImage, contoursImage, Size(4,4));
-
-// 		HoughCircles(contoursImage, circles, CV_HOUGH_GRADIENT, 2, edgeImage.rows/4, 200, 100 );
-
-// 		for( size_t j = 0; j < circles.size(); j++ )
-// 		{
-// 		  Point center(cvRound(circles[j][0]), cvRound(circles[j][1]));
-// 		  int radius = cvRound(circles[j][2]);
-// 		  // circle center
-// //		  circle(originalImage, center, 3, Scalar(0,255,0), -1, 8, 0);
-// 		  // circle outline
-// 		  circle(originalImage, center, radius, color[k], 3, 8, 0);
-// 		}
 
 		findContours(contoursImage, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, Point(0,0));
 
@@ -184,13 +190,13 @@ int main(int argc, char** argv) {
 
 		switch(k) {
 			case 0:
-				disImage((char *)"0 Image", edgeImage, 1);
+				disImage((char *)"0 Image", threshImage, 1);
 				break;
 			case 1:
-				disImage((char *)"1 Image", edgeImage, 2);
+				disImage((char *)"1 Image", threshImage, 2);
 				break;
 			case 2:
-				disImage((char *)"2 Image", edgeImage, 3);
+				disImage((char *)"2 Image", threshImage, 3);
 				break;
 		}
 	}
@@ -232,19 +238,27 @@ void disImage(char* winName, Mat Image, int Position) {
 	namedWindow(winName, WINDOW_NORMAL);
 	imshow(winName, Image);
 	resizeWindow(winName, WINDOWX, WINDOWY);
+
 	switch (Position) {
 		case 1:
-			moveWindow(winName, FIRSTPOSX, FIRSTPOSY);
+			moveWindow(winName, 0, 0);
 			break;
 		case 2:
-			moveWindow(winName, SECONDPOSX, SECONDPOSY);
+			moveWindow(winName, WINDOWX+5, 0);
 			break;
 		case 3:
-			moveWindow(winName, THIRDPOSX, THIRDPOSY);
+			moveWindow(winName, (WINDOWX*2)+10, 0);
 			break;
 		case 4:
-			moveWindow(winName, FOURTHPOSX, FOURTHPOSY);
+			moveWindow(winName, 0, WINDOWY+25);
 			break;
+		case 5:
+			moveWindow(winName, WINDOWX+5, WINDOWY+25);
+			break;
+		case 6:
+			moveWindow(winName, (WINDOWX*2)+10, WINDOWY+25);
+			break;
+
 	}
 	
 }
