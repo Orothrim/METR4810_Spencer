@@ -41,7 +41,7 @@
 
 #define ELEMENT_TYPE 0
 #define OPENING_SIZE 3
-#define CLOSING_SIZE 5
+#define CLOSING_SIZE 3
 
 //Used to access all of the images.
 #define ONESCOLUMN 6
@@ -116,53 +116,58 @@ int main(int argc, char** argv) {
 	openElement = getStructuringElement(eleType , Size( 2*OPENING_SIZE + 1, 2*OPENING_SIZE+1 ), Point(OPENING_SIZE, OPENING_SIZE));
 	closeElement = getStructuringElement(eleType , Size( 2*CLOSING_SIZE + 1, 2*CLOSING_SIZE+1 ), Point(CLOSING_SIZE, CLOSING_SIZE));
 
+	if (DEBUG) {cout << "Elements Created\n\r";}
+
 	//Creates the image variables used for this project, one is used for each step
 	//to facilitate debugging and understanding the code.
 	Mat image = originalImage.clone(), threshImage, reducedImage, grayImage, erodedImage, colourImages[3], yuvImage, yuvSplit[3], edgeImage, contoursImage, blueImage, greenImage, redImage, brightImage;
 
-	
+	if (DEBUG) {cout << "Variables Created\n\r";}
+
 	cvtColor(image, yuvImage, CV_BGR2YCrCb);
 	split(yuvImage, yuvSplit);
-	yuvAvg = mean(yuvSplit[0]);
-	threshold(yuvSplit[0], brightImage, yuvAvg[0]*2, 255, THRESH_TOZERO);
+	yuvAvg = mean(yuvImage);
+
+	threshold(yuvSplit[0], brightImage, yuvAvg[0]*1.5, 255, THRESH_TOZERO);
+	threshold(yuvSplit[1], redImage, yuvAvg[1]*1.1, 255, THRESH_TOZERO);
+	threshold(yuvSplit[2], blueImage, yuvAvg[2]*1.1, 255, THRESH_TOZERO);
 
 	dilate(brightImage, brightImage, closeElement);
+	// subtract(brightDImage, brightImage, borderImage);
 
 	disImage((char *)"Bright Image", brightImage, 6);
 
 	split(image, colourImages);
-	intenseAvg = mean(image);
 
-	blueImage = colourImages[0].clone();
+	// blueImage = colourImages[0].clone();
 	greenImage = colourImages[1].clone();
-	redImage = colourImages[2].clone();
+	// redImage = colourImages[2].clone();
 
-	disImage((char *)"Blue Image", blueImage, 1);
+	disImage((char *)"Yuv Blue Image", blueImage, 1);
 	disImage((char *)"Green Image", greenImage, 2);
-	disImage((char *)"Red Image", redImage, 3);
+	disImage((char *)"Yuv Red Image", redImage, 3);
 
 	//White lights should be reduced, as the markers are distinct colours.
-	// colourImages[0] = blueImage - greenImage*0.5 - redImage*0.5;
-	bitwise_and(colourImages[0], brightImage, colourImages[0]);
-
-	// colourImages[1] = greenImage - blueImage*0.5 - redImage*0.5;
+	colourImages[0] = blueImage;// - greenImage*0.3 - redImage*0.3;
+	colourImages[1] = greenImage;// - blueImage*0.3 - redImage*0.3;
+	colourImages[2] = redImage;// - greenImage*0.3 - blueImage*0.3;
+	
+	bitwise_and(blueImage, brightImage, colourImages[0]);
 	bitwise_and(colourImages[1], brightImage, colourImages[1]);
-
-	// colourImages[2] = redImage - greenImage*0.5 - blueImage*0.5;
-	bitwise_and(colourImages[2], brightImage, colourImages[2]);
+	bitwise_and(redImage, brightImage, colourImages[2]);
 
 	disImage((char *)"Blue Image 2", colourImages[0], 1);
 	disImage((char *)"Green Image 2", colourImages[1], 2);
 	disImage((char *)"Red Image 2", colourImages[2], 3);
 
-
 	if (DEBUG) {cout << "Colours Managed" << endl;}
 
-	// grayImage = imread(filename, 0);
 	for(int k = 0; k <= 2; k++) {
 		if (DEBUG) {cout << "Loop: " << k << endl;}
-	
-		threshold(colourImages[k], colourImages[k], intenseAvg[k]*1.2, 255, THRESH_TOZERO);
+
+		intenseAvg = mean(colourImages[k]);
+
+		threshold(colourImages[k], threshImage, intenseAvg[0]*1.2, 255, THRESH_BINARY);
 	
 		erode(colourImages[k], erodedImage, openElement);
 		dilate(erodedImage, threshImage, openElement);
@@ -178,11 +183,12 @@ int main(int argc, char** argv) {
 
 		largestArea = 0;
 		area = 0;
+		contourIndex = 0;
 		for(int i = 0; i<contours.size(); i++) {
 			area = contourArea(contours[i], false);
 			if(area > AREA_THRESH) {
-				// largestArea = area;
-				// contourIndex = i;
+				largestArea = area;
+				contourIndex = i;
 				bRect = boundingRect(contours[i]);
 				rectangle(originalImage, bRect, color[k]);
 			}
@@ -190,13 +196,13 @@ int main(int argc, char** argv) {
 
 		switch(k) {
 			case 0:
-				disImage((char *)"0 Image", threshImage, 1);
+				disImage((char *)"Blue Image 3", threshImage, 1);
 				break;
 			case 1:
-				disImage((char *)"1 Image", threshImage, 2);
+				disImage((char *)"Green Image 3", threshImage, 2);
 				break;
 			case 2:
-				disImage((char *)"2 Image", threshImage, 3);
+				disImage((char *)"Red Image 3", threshImage, 3);
 				break;
 		}
 	}

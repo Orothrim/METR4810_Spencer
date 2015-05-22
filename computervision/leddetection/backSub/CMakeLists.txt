@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 2.8)
+project( liveVid )
+find_package( OpenCV REQUIRED )
+add_executable( liveVid liveVid.cpp )
+target_link_libraries( liveVid ${OpenCV_LIBS} )

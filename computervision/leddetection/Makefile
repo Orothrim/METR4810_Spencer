@@ -102,41 +102,41 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named ledDetection3
+# Target rules for targets named liveDetection
 
 # Build rule for target.
-ledDetection3: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ledDetection3
-.PHONY : ledDetection3
+liveDetection: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 liveDetection
+.PHONY : liveDetection
 
 # fast build rule for target.
-ledDetection3/fast:
-	$(MAKE) -f CMakeFiles/ledDetection3.dir/build.make CMakeFiles/ledDetection3.dir/build
-.PHONY : ledDetection3/fast
+liveDetection/fast:
+	$(MAKE) -f CMakeFiles/liveDetection.dir/build.make CMakeFiles/liveDetection.dir/build
+.PHONY : liveDetection/fast
 
-ledDetection3.o: ledDetection3.cpp.o
-.PHONY : ledDetection3.o
+liveDetection.o: liveDetection.cpp.o
+.PHONY : liveDetection.o
 
 # target to build an object file
-ledDetection3.cpp.o:
-	$(MAKE) -f CMakeFiles/ledDetection3.dir/build.make CMakeFiles/ledDetection3.dir/ledDetection3.cpp.o
-.PHONY : ledDetection3.cpp.o
+liveDetection.cpp.o:
+	$(MAKE) -f CMakeFiles/liveDetection.dir/build.make CMakeFiles/liveDetection.dir/liveDetection.cpp.o
+.PHONY : liveDetection.cpp.o
 
-ledDetection3.i: ledDetection3.cpp.i
-.PHONY : ledDetection3.i
+liveDetection.i: liveDetection.cpp.i
+.PHONY : liveDetection.i
 
 # target to preprocess a source file
-ledDetection3.cpp.i:
-	$(MAKE) -f CMakeFiles/ledDetection3.dir/build.make CMakeFiles/ledDetection3.dir/ledDetection3.cpp.i
-.PHONY : ledDetection3.cpp.i
+liveDetection.cpp.i:
+	$(MAKE) -f CMakeFiles/liveDetection.dir/build.make CMakeFiles/liveDetection.dir/liveDetection.cpp.i
+.PHONY : liveDetection.cpp.i
 
-ledDetection3.s: ledDetection3.cpp.s
-.PHONY : ledDetection3.s
+liveDetection.s: liveDetection.cpp.s
+.PHONY : liveDetection.s
 
 # target to generate assembly for a file
-ledDetection3.cpp.s:
-	$(MAKE) -f CMakeFiles/ledDetection3.dir/build.make CMakeFiles/ledDetection3.dir/ledDetection3.cpp.s
-.PHONY : ledDetection3.cpp.s
+liveDetection.cpp.s:
+	$(MAKE) -f CMakeFiles/liveDetection.dir/build.make CMakeFiles/liveDetection.dir/liveDetection.cpp.s
+.PHONY : liveDetection.cpp.s
 
 # Help Target
 help:
@@ -145,11 +145,11 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
-	@echo "... ledDetection3"
+	@echo "... liveDetection"
 	@echo "... rebuild_cache"
-	@echo "... ledDetection3.o"
-	@echo "... ledDetection3.i"
-	@echo "... ledDetection3.s"
+	@echo "... liveDetection.o"
+	@echo "... liveDetection.i"
+	@echo "... liveDetection.s"
 .PHONY : help
 
 

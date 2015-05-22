@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project( ledDetection3 )
+project( liveDetection )
 find_package( OpenCV REQUIRED )
-add_executable( ledDetection3 ledDetection3.cpp )
-target_link_libraries( ledDetection3 ${OpenCV_LIBS} )
+add_executable( liveDetection liveDetection.cpp )
+target_link_libraries( liveDetection ${OpenCV_LIBS} )

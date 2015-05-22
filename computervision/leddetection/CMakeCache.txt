@@ -116,7 +116,7 @@ CMAKE_OBJCOPY:FILEPATH=/usr/bin/objcopy
 CMAKE_OBJDUMP:FILEPATH=/usr/bin/objdump
 
 //Value Computed by CMake
-CMAKE_PROJECT_NAME:STATIC=ledDetection3
+CMAKE_PROJECT_NAME:STATIC=liveDetection
 
 //Path to a program.
 CMAKE_RANLIB:FILEPATH=/usr/bin/ranlib
@@ -206,10 +206,34 @@ ledDetection3_BINARY_DIR:STATIC=/home/swift/code/METR4810_Spencer/computervision
 ledDetection3_SOURCE_DIR:STATIC=/home/swift/code/METR4810_Spencer/computervision/leddetection
 
 //Value Computed by CMake
+ledDetection4_BINARY_DIR:STATIC=/home/swift/code/METR4810_Spencer/computervision/leddetection
+
+//Value Computed by CMake
+ledDetection4_SOURCE_DIR:STATIC=/home/swift/code/METR4810_Spencer/computervision/leddetection
+
+//Value Computed by CMake
 leddetection_BINARY_DIR:STATIC=/home/swift/code/METR4810_Spencer/computervision/leddetection
 
 //Value Computed by CMake
 leddetection_SOURCE_DIR:STATIC=/home/swift/code/METR4810_Spencer/computervision/leddetection
+
+//Value Computed by CMake
+liveDetection1_BINARY_DIR:STATIC=/home/swift/code/METR4810_Spencer/computervision/leddetection
+
+//Value Computed by CMake
+liveDetection1_SOURCE_DIR:STATIC=/home/swift/code/METR4810_Spencer/computervision/leddetection
+
+//Value Computed by CMake
+liveDetection_BINARY_DIR:STATIC=/home/swift/code/METR4810_Spencer/computervision/leddetection
+
+//Value Computed by CMake
+liveDetection_SOURCE_DIR:STATIC=/home/swift/code/METR4810_Spencer/computervision/leddetection
+
+//Value Computed by CMake
+test1_BINARY_DIR:STATIC=/home/swift/code/METR4810_Spencer/computervision/leddetection
+
+//Value Computed by CMake
+test1_SOURCE_DIR:STATIC=/home/swift/code/METR4810_Spencer/computervision/leddetection
 
 //Value Computed by CMake
 videoLedDet_BINARY_DIR:STATIC=/home/swift/code/METR4810_Spencer/computervision/leddetection

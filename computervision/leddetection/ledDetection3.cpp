@@ -89,7 +89,7 @@ int write(char message[10]);
 int main(int argc, char** argv) {
 
 
-	string filename = "led5.jpg";
+	string filename = "led4.jpg";
 
 	//If no argument is given to "./Contours" then MRI1_01.png is used.
 
@@ -124,7 +124,7 @@ int main(int argc, char** argv) {
 	cvtColor(image, yuvImage, CV_BGR2YCrCb);
 	split(yuvImage, yuvSplit);
 	yuvAvg = mean(yuvSplit[0]);
-	threshold(yuvSplit[0], brightImage, yuvAvg[0]*1.3, 255, THRESH_TOZERO);
+	threshold(yuvSplit[0], brightImage, yuvAvg[0]*2, 255, THRESH_TOZERO);
 
 	dilate(brightImage, brightImage, closeElement);
 
@@ -133,9 +133,9 @@ int main(int argc, char** argv) {
 	split(image, colourImages);
 	intenseAvg = mean(image);
 
-	blueImage = yuvSplit[2].clone();
+	blueImage = colourImages[0].clone();
 	greenImage = colourImages[1].clone();
-	redImage = yuvSplit[1].clone();
+	redImage = colourImages[2].clone();
 
 	disImage((char *)"Blue Image", blueImage, 1);
 	disImage((char *)"Green Image", greenImage, 2);
@@ -143,13 +143,13 @@ int main(int argc, char** argv) {
 
 	//White lights should be reduced, as the markers are distinct colours.
 	// colourImages[0] = blueImage - greenImage*0.5 - redImage*0.5;
-	bitwise_and(yuvSplit[2], brightImage, colourImages[0]);
+	bitwise_and(colourImages[0], brightImage, colourImages[0]);
 
 	// colourImages[1] = greenImage - blueImage*0.5 - redImage*0.5;
 	bitwise_and(colourImages[1], brightImage, colourImages[1]);
 
 	// colourImages[2] = redImage - greenImage*0.5 - blueImage*0.5;
-	bitwise_and(yuvSplit[1], brightImage, colourImages[2]);
+	bitwise_and(colourImages[2], brightImage, colourImages[2]);
 
 	disImage((char *)"Blue Image 2", colourImages[0], 1);
 	disImage((char *)"Green Image 2", colourImages[1], 2);

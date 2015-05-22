@@ -25,7 +25,7 @@ int noteDurations[] = {
 };
 
 void setup() {                
-  Serial1.begin(9600);
+  Serial1.begin(115200);
 }
 
 void loop() {
@@ -35,11 +35,11 @@ void loop() {
     btMsg = Serial1.read();
 
     if(btMsg == 'u') {
-      analogWrite(23, 70);
+      analogWrite(23, 30);
     }
 
     else if(btMsg == 'd') {
-      analogWrite(23, 100);
+      analogWrite(23, 200);
     }
 
     else if(btMsg == 't') {
